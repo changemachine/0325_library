@@ -6,12 +6,14 @@
     private $author1;
     private $author2;
     private $author3;
+    private $id;
 
-    function __construct($author1, $author2, $author3)
+    function __construct($author1, $author2, $author3, $id)
     {
         $this->author1 = $author1;
         $this->author2 = $author2;
         $this->author3 = $author3;
+        $this->id = $id;
     }
 
     //SET GET PROPS
@@ -45,9 +47,42 @@
         return $this->author3;
     }
 
+    function setId($new_id)
+    {
+        $this->id = (int) $new_id;
+    }
+    function getId()
+    {
+        return $this->id;
+    }
+
     //SAVE GET-ALL, DELETE-ALL
+    function save()
+    {
+        $statement = $GLOBALS['DB']->query("INSERT INTO authors (author1, author2, author3) VALUES ('{$this->getAuthor1()}', '{$this->getAuthor2()}', '{$this->getAuthor3()}') RETURNING id;");
+        $result = $statement->fetch(PDO::FETCH_ASSOC);
+        $this->setId($result['id']);
+    }
 
+    static function getAll()
+    {
+        $returned_authors = $GLOBALS['DB']->query("SELECT * FROM authors;");
+        $authors = array();
+        foreach ($returned_authors as $author){
+            $author1 = $author['author1'];
+            $author2 = $author['author2'];
+            $author3 = $author['author3'];
+            $id = $author['id'];
+            $new_author = new Author($author1, $author2, $author3, $id);
+            array_push($authors, $new_author);
+        }
+        return $authors;
+    }
 
+    static function deleteAll()
+    {
+        $GLOBALS['DB']->exec("DELETE FROM authors *;");
+    }
 
     //FIND BY AUTHOR, UPDATE & DELETE AUTHOR
 
