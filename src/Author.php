@@ -3,48 +3,24 @@
     class Author
     {
 
-    private $author1;
-    private $author2;
-    private $author3;
+    private $author;
     private $id;
 
-    function __construct($author1, $author2, $author3, $id)
+    function __construct($author, $id)
     {
-        $this->author1 = $author1;
-        $this->author2 = $author2;
-        $this->author3 = $author3;
+        $this->author = $author;
         $this->id = $id;
     }
 
     //SET GET PROPS
-    function setAuthor1($new_author1)
+    function setAuthor($new_author)
     {
-        $this->author1 = (string) $new_author1;
+        $this->author = (string) $new_author;
     }
 
-    function getAuthor1()
+    function getAuthor()
     {
-        return $this->author1;
-    }
-
-    function setAuthor2($new_author1)
-    {
-        $this->author2 = (string) $new_author1;
-    }
-
-    function getAuthor2()
-    {
-        return $this->author2;
-    }
-
-    function setAuthor3($new_author3)
-    {
-        $this->author3 = (string) $new_author3;
-    }
-
-    function getAuthor3()
-    {
-        return $this->author3;
+        return $this->author;
     }
 
     function setId($new_id)
@@ -59,7 +35,7 @@
     //SAVE GET-ALL, DELETE-ALL
     function save()
     {
-        $statement = $GLOBALS['DB']->query("INSERT INTO authors (author1, author2, author3) VALUES ('{$this->getAuthor1()}', '{$this->getAuthor2()}', '{$this->getAuthor3()}') RETURNING id;");
+        $statement = $GLOBALS['DB']->query("INSERT INTO authors (author) VALUES ('{$this->getAuthor()}') RETURNING id;");
         $result = $statement->fetch(PDO::FETCH_ASSOC);
         $this->setId($result['id']);
     }
@@ -68,12 +44,10 @@
     {
         $returned_authors = $GLOBALS['DB']->query("SELECT * FROM authors;");
         $authors = array();
-        foreach ($returned_authors as $author){
-            $author1 = $author['author1'];
-            $author2 = $author['author2'];
-            $author3 = $author['author3'];
-            $id = $author['id'];
-            $new_author = new Author($author1, $author2, $author3, $id);
+        foreach ($returned_authors as $r_author){
+            $author = $r_author['author'];
+            $id = $r_author['id'];
+            $new_author = new Author($author, $id);
             array_push($authors, $new_author);
         }
         return $authors;
@@ -85,33 +59,53 @@
     }
 
 
-    //FIND BY AUTHOR, UPDATE & DELETE AUTHOR
+    // √ FIND BY AUTHOR, UPDATE & DELETE AUTHOR
 
-        static function find($search_id)
-        {
-            $found_author = null;
-            $authors = Author::getAll();
-            foreach($authors as $author){
-                $author_id = $author->getId();
-                if($author_id == $search_id){
-                    $found_author = $author;
-                }
+    static function find($search_id)
+    {
+        $found_author = null;
+        $authors = Author::getAll();
+        foreach($authors as $author){
+            $author_id = $author->getId();
+            if($author_id == $search_id){
+                $found_author = $author;
             }
-            return $found_author;
         }
+        return $found_author;
+    }
 
-        function update($new_author1, $new_author2, $new_author3)
-        {
-            $GLOBALS['DB']->exec("UPDATE authors SET author1 = '{$new_author1}' WHERE id = {$this->getId()};");
-            $this->setAuthor1($new_author1);
-            $GLOBALS['DB']->exec("UPDATE authors SET author2 = '{$new_author2}' WHERE id = {$this->getId()};");
-            $this->setAuthor2($new_author2);
-            $GLOBALS['DB']->exec("UPDATE authors SET author3 = '{$new_author3}' WHERE id = {$this->getId()};");
-            $this->setAuthor3($new_author3);
+    function update($new_author)
+    {
+        $GLOBALS['DB']->exec("UPDATE authors SET author = '{$new_author}' WHERE id = {$this->getId()};");
+        $this->setAuthor($new_author);
+    }
+
+    function deleteAuthor()
+    {
+        $GLOBALS['DB']->exec("DELETE FROM authors WHERE id = {$this->getId()};");
+        // JOIN TABLE!
+    }
+
+    function addBook($book)
+    {
+        $GLOBALS['DB']->exec("INSERT INTO authors_books (author_id, book_id) VALUES ({$this->getId()}, {$book->getId()});");
+    }
+
+    function getBooks(){
+        $query = $GLOBALS['DB']->query("SELECT books.* FROM authors JOIN authors_books ON (authors.id = authors_books.author_id) JOIN books ON (authors_books.book_id = books.id) WHERE authors.id = {$this->getId()};");
+
+        $returned_books = $query->fetchAll(PDO::FETCH_ASSOC);
+
+        $books = array();
+        foreach($returned_books as $r_book){
+            $title = $r_book['title'];
+            $genre = $r_book['genre'];
+            $id = $r_book['id'];
+            $new_book = new Book($title, $genre, $id);
+            array_push($books, $new_book);
         }
-
-
-    //funtion getBooks(){}
+        return $books;
+    }
 
 
 

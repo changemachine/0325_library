@@ -9,51 +9,44 @@
     $DB = new PDO('pgsql:host=localhost;dbname=library_test');
 
     require_once "src/Author.php";
-    // require_once "src/Book.php";
+    require_once "src/Book.php";
+    require_once "src/Copy.php";
 
     class AuthorTest extends PHPUnit_Framework_TestCase
     {
 
         protected function tearDown(){
             Author::deleteAll();
+            Book::deleteAll();
+            Copy::deleteAll();
         }
 
         // SET & GET PROPERTIES
-        function test_setAuthor1()
+        function test_setAuthor()
         {
             //Arrange
-            $author1 = "Mark Twain";
-            $author2 = "Willa Kather";
-            $author3 = "Ursela LeGuin";
+            $author = "Mark Twain";
             $id = 1;
-            $test_author = new Author($author1, $author2, $author3, $id);
+            $test_author = new Author($author, $id);
 
             //Act
-            $test_author->setAuthor1("Samuel Clemens");
-            $test_author->setAuthor2("Willa Cather");
-            $test_author->setAuthor3("Ursela K. Leguin");
-            $author1 = $test_author->getAuthor1();
-            $author2 = $test_author->getAuthor2();
-            $author3 = $test_author->getAuthor3();
+            $test_author->setAuthor("Samuel Clemens");
+            $author = $test_author->getAuthor();
 
             //$result = array();
-            $result1 = $test_author->getAuthor1();
-            $result2 = $test_author->getAuthor2();
-            $result3 = $test_author->getAuthor3();
+            $result1 = $test_author->getAuthor();
 
             //Assert
-            $this->assertEquals([$author1, $author2, $author3], [$result1, $result2, $result3]);
+            $this->assertEquals($author, $result1);
         }
 
         //SAVE GET-ALL, DELETE-ALL
         function test_save()
         {
             //Arrange
-            $author1 = "Mark Twain";
-            $author2 = "Willa Kather";
-            $author3 = "Ursela LeGuin";
+            $author = "Mark Twain";
             $id = 1;
-            $test_author = new Author($author1, $author2, $author3, $id);
+            $test_author = new Author($author, $id);
 
             //Act
             $test_author->save();
@@ -66,18 +59,14 @@
         function test_getAll()
         {
             //Arrange
-            $author1 = "Mark Twain";
-            $author2 = "Willa Kather";
-            $author3 = "Ursela LeGuin";
+            $author = "Mark Twain";
             $id = 1;
-            $test_author = new Author($author1, $author2, $author3, $id);
+            $test_author = new Author($author, $id);
             $test_author->save();
 
             $author4 = "Mark Twain";
-            $author5 = "Willa Kather";
-            $author6 = "Ursela LeGuin";
             $id2 = 2;
-            $test_author2 = new Author($author4, $author5, $author6, $id2);
+            $test_author2 = new Author($author4, $id2);
             $test_author2->save();
 
             //Act
@@ -88,18 +77,14 @@
         function test_deleteAll()
         {
             //Arrange
-            $author1 = "Mark Twain";
-            $author2 = "Willa Kather";
-            $author3 = "Ursela LeGuin";
+            $author = "Mark Twain";
             $id = 1;
-            $test_author = new Author($author1, $author2, $author3, $id);
+            $test_author = new Author($author, $id);
             $test_author->save();
 
             $author4 = "Mark Twain";
-            $author5 = "Willa Kather";
-            $author6 = "Ursela LeGuin";
             $id2 = 2;
-            $test_author2 = new Author($author4, $author5, $author6, $id2);
+            $test_author2 = new Author($author4, $id2);
             $test_author2->save();
 
             //Act
@@ -114,18 +99,14 @@
         function test_find()
         {
             //Arrange
-            $author1 = "Mark Twain";
-            $author2 = "Willa Kather";
-            $author3 = "Ursela LeGuin";
+            $author = "Mark Twain";
             $id = 1;
-            $test_author = new Author($author1, $author2, $author3, $id);
+            $test_author = new Author($author, $id);
             $test_author->save();
 
             $author4 = "Mark Twain";
-            $author5 = "Willa Kather";
-            $author6 = "Ursela LeGuin";
             $id2 = 2;
-            $test_author2 = new Author($author4, $author5, $author6, $id2);
+            $test_author2 = new Author($author4, $id2);
             $test_author2->save();
 
             //Act
@@ -138,24 +119,99 @@
         function test_update()
         {
             //Arrange
-            $author1 = "Mark Twain";
-            $author2 = "Willa Kather";
-            $author3 = "Ursela LeGuin";
+            $author = "Mark Twain";
             $id = 1;
-            $test_author = new Author($author1, $author2, $author3, $id);
+            $test_author = new Author($author, $id);
             $test_author->save();
-            $new_author1 = "Sam Clemens";
-            $new_author2 = "Willa Cather";
-            $new_author3 = "Ursela LeGuin";
+            $new_author = "Sam Clemens";
 
             //Act
-            $test_author->update($new_author1, $new_author2, $new_author3);
+            $test_author->update($new_author);
 
             //Assert
-            $this->assertEquals(['Sam Clemens', 'Willa Cather', 'Ursela LeGuin'], [$test_author->getAuthor1(), $test_author->getAuthor2(), $test_author->getAuthor3()]);
+            $this->assertEquals('Sam Clemens', $test_author->getAuthor());
         }
 
+        function test_deleteAuthor()
+        {
+            //Arrange
+            $author = "Mark Twain";
+            $id = 1;
+            $test_author = new Author($author, $id);
+            $test_author->save();
 
+            $author4 = "Mark Twain";
+            $id2 = 2;
+            $test_author2 = new Author($author4, $id2);
+            $test_author2->save();
+
+            //Act
+            $test_author2->deleteAuthor();
+            $result = Author::getAll();
+
+            //Assert
+            $this->assertEquals([$test_author], $result);
+
+        }
+
+        function test_addBook()
+        {
+            //Arrange
+            $author = "Mark Twain";
+            $id = 1;
+            $test_author = new Author($author, $id);
+            $test_author->save();
+
+            $title = "Create Dangerously";
+            $genre = "Memoir";
+            $id = 1;
+            $test_book = new Book($title, $genre, $id);
+            $test_book->save();
+
+            $title2 = "Spiritual Economics";
+            $genre2 = "Economics";
+            $id2 = 2;
+            $test_book2 = new Book($title2, $genre2, $id2);
+            $test_book2->save();
+
+            //Act
+            $test_author->addBook($test_book);
+            $test_author->addBook($test_book2);
+
+            //Assert
+            $this->assertEquals($test_author->getBooks(), [$test_book, $test_book2]);
+        }
+
+        function test_getBooks()
+        {
+            //Arrange
+            $author = "Mark Twain";
+            $id = 1;
+            $test_author = new Author($author, $id);
+            $test_author->save();
+
+            $title = "Create Dangerously";
+            $genre = "Memoir";
+            $id = 1;
+            $test_book = new Book($title, $genre, $id);
+            $test_book->save();
+
+            $title2 = "Spiritual Economics";
+            $genre2 = "Economics";
+            $id2 = 2;
+            $test_book2 = new Book($title2, $genre2, $id2);
+            $test_book2->save();
+
+            //Act
+
+            $test_author->addBook($test_book);
+            $test_author->addBook($test_book2);
+            $result = $test_author->getBooks();
+
+            //Assert
+            $this->assertEquals([$test_book, $test_book2], $result);
+
+        }
 
 
 
