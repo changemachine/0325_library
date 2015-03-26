@@ -57,35 +57,34 @@
     {
         $GLOBALS['DB']->exec("DELETE FROM copies *;");
     }
-    //
-    //
-    // // √ FIND BY AUTHOR, UPDATE & DELETE AUTHOR
-    //
-    // static function find($search_id)
-    // {
-    //     $found_author = null;
-    //     $authors = Copy::getAll();
-    //     foreach($authors as $author){
-    //         $author_id = $author->getId();
-    //         if($author_id == $search_id){
-    //             $found_author = $author;
-    //         }
-    //     }
-    //     return $found_author;
-    // }
-    //
-    // function update($new_author)
-    // {
-    //     $GLOBALS['DB']->exec("UPDATE authors SET author = '{$new_author}' WHERE id = {$this->getId()};");
-    //     $this->setAuthor($new_author);
-    // }
-    //
-    // function deleteAuthor()
-    // {
-    //     $GLOBALS['DB']->exec("DELETE FROM authors WHERE id = {$this->getId()};");
-    //     // JOIN TABLE!
-    // }
-    //
+
+
+    // √ FIND BY COPY, UPDATE & DELETE COPY
+
+    static function find($search_id)
+    {
+        $found_copy = null;
+        $copies = Copy::getAll();
+        foreach($copies as $copy){
+            $copy_id = $copy->getId();
+            if($copy_id == $search_id){
+                $found_copy = $copy;
+            }
+        }
+        return $found_copy;
+    }
+
+    function updateCopy($new_book_id)
+    {
+        $GLOBALS['DB']->exec("UPDATE copies SET book_id = {$new_book_id} WHERE id = {$this->getId()};");
+        $this->setBookId($new_book_id);
+    }
+
+    function deleteCopy()
+    {
+        $GLOBALS['DB']->exec("DELETE FROM copies WHERE id = {$this->getId()};");
+    }
+
     // function addBook($book)
     // {
     //     $GLOBALS['DB']->exec("INSERT INTO authors_books (author_id, book_id) VALUES ({$this->getId()}, {$book->getId()});");
