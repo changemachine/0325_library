@@ -83,28 +83,16 @@
     function deleteCopy()
     {
         $GLOBALS['DB']->exec("DELETE FROM copies WHERE id = {$this->getId()};");
+
     }
 
-    // function addBook($book)
-    // {
-    //     $GLOBALS['DB']->exec("INSERT INTO authors_books (author_id, book_id) VALUES ({$this->getId()}, {$book->getId()});");
-    // }
-    //
-    // function getBooks(){
-    //     $query = $GLOBALS['DB']->query("SELECT books.* FROM authors JOIN authors_books ON (authors.id = authors_books.author_id) JOIN books ON (authors_books.book_id = books.id) WHERE authors.id = {$this->getId()};");
-    //
-    //     $returned_books = $query->fetchAll(PDO::FETCH_ASSOC);
-    //
-    //     $books = array();
-    //     foreach($returned_books as $r_book){
-    //         $title = $r_book['title'];
-    //         $genre = $r_book['genre'];
-    //         $id = $r_book['id'];
-    //         $new_book = new Book($title, $genre, $id);
-    //         array_push($books, $new_book);
-    //     }
-    //     return $books;
-    // }
+    function addCheckout($patron, $duedate)
+    {
+        $GLOBALS['DB']->exec("INSERT INTO checkouts (patron_id, copy_id, duedate) VALUES ({$patron->getId()}, {$this->getId()}, '{$duedate}');");
+    }
+
+
+
 
 
 

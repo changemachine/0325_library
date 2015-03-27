@@ -10,6 +10,8 @@
     require_once "src/Author.php";
     require_once "src/Book.php";
     require_once "src/Copy.php";
+    require_once "src/Patron.php";
+    require_once "src/Checkout.php";
 
     class CopyTest extends PHPUnit_Framework_TestCase
     {
@@ -18,6 +20,9 @@
             Author::deleteAll();
             Book::deleteAll();
             Copy::deleteAll();
+            Patron::deleteAll();
+            Checkout::deleteAll();
+
         }
 
         function test_save()
@@ -93,6 +98,41 @@
             $this->assertEquals([$test_copy], $result);
         }
 
+        function test_addCheckout()
+        {
+            //Arrange
+            $title = "Create";
+            $genre = 'scific';
+            $id = 1;
+            $new_book = new Book($title, $genre, $id);
+            $new_book->save();
+            
+            $book_id = $new_book->getBookId();
+            $id3 = 3;
+            $new_copy = new Copy($book_id, $id3);
+            $new_copy->save();
+
+            $name = 'Bart';
+            $contact = '999-000-8888';
+            $id4 = 4;
+            $patron = new Patron($name, $contact, $id4);
+            $patron->save();
+
+            $patron_id = $patron->getPatronId();
+            $copy_id = $new_copy->getCopyId();
+            $duedate = '2015-09-07';
+            $id5 = 5;
+            $new_checkout = new Checkout($patron_id, $copy_id, $duedate, $id5);
+            $new_checkout->save();
+            //var_dump($new_checkout);
+
+            //Act
+            $new_copy->addCheckout($new_checkout);
+            $result = Checkout::getAll();
+
+            //Assert
+            $this->assertEquals([$new_checkout], $result);
+        }
 
 
 

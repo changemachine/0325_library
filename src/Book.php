@@ -123,9 +123,21 @@
             return $authors;
         }
 
+        function addCopy()
+        {
+            $GLOBALS['DB']->exec("INSERT INTO copies (book_id) VALUES ({$this->getId()});");
+        }
 
+        function getCopies()
+        {
+            $query = $GLOBALS['DB']->query("SELECT book_id, count(1) FROM copies WHERE book_id = {$this->getId()} GROUP BY book_id;");
 
+            $returned_copies = $query->fetchAll(PDO::FETCH_ASSOC);
 
-    }
+                $count = $returned_copies[0]['count'];
+                return $count;
+            }
+
+        }
 
 ?>

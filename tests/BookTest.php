@@ -11,6 +11,8 @@
     require_once "src/Author.php";
     require_once "src/Book.php";
     require_once "src/Copy.php";
+    require_once "src/Patron.php";
+    require_once "src/Checkout.php";
 
     class BookTest extends PHPUnit_Framework_TestCase
     {
@@ -19,6 +21,8 @@
             Author::deleteAll();
             Book::deleteAll();
             Copy::deleteAll();
+            Patron::deleteAll();
+            Checkout::deleteAll();
         }
 
         // SET & GET PROPERTIES
@@ -147,7 +151,24 @@
 
         }
 
-        function test_getAuthors()
+        // CREATE, GET COPIES
+        function test_addCopy()
+        {
+            //Arrange
+            $title = "Create Dangerously";
+            $genre = "Memoir";
+            $id = 1;
+            $test_book = new Book($title, $genre, $id);
+            $test_book->save();
+
+            //Act
+            $test_book->addCopy();
+            $result = $test_book->getCopies();
+            //Assert
+            $this->assertEquals(1, $result);
+        }
+
+        function test_getCopies()
         {
             $title = "Create Dangerously";
             $genre = "Memoir";
@@ -155,31 +176,12 @@
             $test_book = new Book($title, $genre, $id);
             $test_book->save();
 
-            $author1 = "Mark Twain";
-            $id = 1;
-            $test_author = new Author($author1, $id);
-            $test_author->save();
+            $test_book->addCopy();
+            $test_book->addCopy();
 
-            $author4 = "Mark Twain";
-            $id2 = 2;
-            $test_author2 = new Author($author4, $id2);
-            $test_author2->save();
-
-            $test_book->addAuthor($test_author);
-            $test_book->addAuthor($test_author2);
-
-            $this->assertEquals($test_book->getAuthors(), [$test_author, $test_author2]);
-
+            $result = $test_book->getCopies();
+            $this->assertEquals(2, $result);
         }
-
-
-
-
-
-
-
-
-
 
 
 
