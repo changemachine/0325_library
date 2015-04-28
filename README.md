@@ -16,3 +16,4 @@ This web app allows the user to enter their name and amount to deposit withdraw.
 - HTML5
 - CSS3
 - PHP
+- Postgres
