@@ -1,8 +1,8 @@
-# Bank Account for Epicodus
+# Epicodus Code Review: Library
 ## by James Nielson
 ### Date: April, 2015
 #### Description
-This web app allows the user to enter their name and amount to deposit withdraw. Will show account's balance.
+This web app allows the user to manage books and authors using a database and join table.
 
 #### Setup instructions
 1. Clone this git repository
